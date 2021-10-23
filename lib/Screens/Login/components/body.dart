@@ -7,10 +7,29 @@ import 'package:ligon_register/components/rounded_button.dart';
 import 'package:ligon_register/components/rounded_input_field.dart';
 import 'package:ligon_register/components/rounded_password_field.dart';
 import 'package:ligon_register/constants.dart';
+import 'package:ligon_register/services/validotrs.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
+  const Body({Key? key}) : super(key: key);
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  late String email = '', passWord = '';
+  late bool setText = true;
+  late int count = 0;
   @override
   Widget build(BuildContext context) {
+    if (!setText && count != 0) {
+      setState(() {
+        setText = true;
+      });
+    } else if (!setText && count == 0)
+      setState(() {
+        count++;
+      });
     Size size = MediaQuery.of(context).size;
     return Background(
       child: SingleChildScrollView(
@@ -30,14 +49,36 @@ class Body extends StatelessWidget {
               height: size.height * 0.35,
             ),
             SizedBox(height: size.height * 0.03),
-            RoundedInputField(hintText: "Your Email", onChanged: (value) {}),
+            RoundedInputField(
+              hintText: "Your Email",
+              onChanged: (value) {
+                setState(() {
+                  email = value;
+                });
+              },
+              inputText: setText,
+            ),
             RoundedPasswordField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() {
+                  passWord = value;
+                });
+              },
               hintText: 'Password',
+              inputText: setText,
             ),
             RoundedButton(
               text: "LOGIN",
-              press: () {},
+              press: () {
+                if (!Validator.checkEmpty(email, passWord)) {
+                  setState(() {
+                    email = '';
+                    passWord = '';
+                    setText = false;
+                    count = 0;
+                  });
+                }
+              },
             ),
             SizedBox(height: size.height * 0.03),
             AlreadyHaveAnAccountCheck(
