@@ -1,12 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
-
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:ligon_register/Screens/Login/login_screen.dart';
-import 'package:ligon_register/Screens/Signup/signup_screen.dart';
 import 'package:ligon_register/Screens/Welcome/welcome_screen.dart';
 import 'package:ligon_register/constants.dart';
 import 'package:ligon_register/services/auth.dart';
@@ -45,7 +40,20 @@ class MyApp extends StatelessWidget {
             print("you have error");
             return Text("Somethong went wrong");
           } else if (snapshot.hasData) {
-            return Home();
+            return StreamBuilder(
+                stream: FirebaseAuth.instance.userChanges(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.active) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  final user = snapshot.data;
+                  if (user != null) {
+                    return Home();
+                  } else
+                    return WelcomeScreen();
+                });
           } else {
             return Center(
               child: CircularProgressIndicator(),

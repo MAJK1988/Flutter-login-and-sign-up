@@ -33,21 +33,24 @@ class _RoundedPasswordFieldState extends State<RoundedPasswordField> {
     super.dispose();
   }
 
-  int count = 0;
+  bool ontapFiled = false;
   @override
   Widget build(BuildContext context) {
     if (!widget.inputText) _myController.clear();
-    setState(() {
-      count++;
-    });
+
     return TextFieldContainer(
       child: TextField(
+        onTap: () {
+          setState(() {
+            ontapFiled = true;
+          });
+        },
         controller: _myController,
         obscureText: vesiblity,
         onChanged: widget.onChanged,
         cursorColor: kPrimaryColor,
         decoration: InputDecoration(
-          errorText: count > 1
+          errorText: ontapFiled
               ? Validator.validatePassword(password: _myController.value.text)
               : null,
           hintText: widget.hintText,

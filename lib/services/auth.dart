@@ -1,12 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:ligon_register/Screens/Welcome/welcome_screen.dart';
+import 'package:ligon_register/Screens/home/home.dart';
 
 class FireAuth {
   // For registering a new user
-  static Future<User?> registerUsingEmailPassword({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
+  static Future<User?> registerUsingEmailPassword(
+      {required String name,
+      required String email,
+      required String password,
+      required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
 
@@ -20,11 +24,14 @@ class FireAuth {
       await user!.updateProfile(displayName: name);
       await user.reload();
       user = auth.currentUser;
+      toWidget(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
+        snackBarMassage(context, 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
+        snackBarMassage(context, 'The account already exists for that email.');
       }
     } catch (e) {
       print(e);
@@ -37,6 +44,7 @@ class FireAuth {
   static Future<User?> signInUsingEmailPassword({
     required String email,
     required String password,
+    required BuildContext context,
   }) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
@@ -47,10 +55,13 @@ class FireAuth {
         password: password,
       );
       user = userCredential.user;
+      toWidget(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        snackBarMassage(context, 'No user found for that email.');
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
+        snackBarMassage(context, 'Wrong password provided.');
         print('Wrong password provided.');
       }
     }
@@ -64,5 +75,57 @@ class FireAuth {
     User? refreshedUser = auth.currentUser;
 
     return refreshedUser;
+  }
+
+  static Future<int> testLogin() async {
+    int state = 0;
+
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+        state = 1;
+      }
+    });
+
+    return state;
+  }
+
+  static void toWidget(BuildContext context) {
+    /* Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Home()),
+    );*/
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Home()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  static void snackBarMassage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          // Some code to undo the change.
+        },
+      ),
+    ));
+  }
+
+  static Future<void> logOut({required BuildContext context}) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+    }
   }
 }

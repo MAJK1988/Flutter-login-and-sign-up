@@ -12,6 +12,8 @@ import 'package:ligon_register/components/already_have_an_account_acheck.dart';
 import 'package:ligon_register/components/rounded_button.dart';
 import 'package:ligon_register/components/rounded_input_field.dart';
 import 'package:ligon_register/components/rounded_password_field.dart';
+import 'package:ligon_register/constants.dart';
+import 'package:ligon_register/services/auth.dart';
 import 'package:ligon_register/services/validotrs.dart';
 
 class Body extends StatefulWidget {
@@ -43,7 +45,14 @@ class _BodydState extends State<Body> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: size.height * 0.03),
+            SizedBox(height: size.height * 0.05),
+            Text(
+              "Register",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryColor,
+                  fontSize: 22.0),
+            ),
             SvgPicture.asset(
               "assets/icons/signup.svg",
               height: size.height * 0.35,
@@ -77,7 +86,7 @@ class _BodydState extends State<Body> {
             ),
             RoundedButton(
               text: "SIGNUP",
-              press: () {
+              press: () async {
                 if (!Validator.checkEmpty(email, passWord, passWordConfirm)) {
                   setState(() {
                     email = '';
@@ -86,6 +95,12 @@ class _BodydState extends State<Body> {
                     setText = false;
                     count = 0;
                   });
+                } else {
+                  await FireAuth.registerUsingEmailPassword(
+                      name: 'KADDOUR',
+                      email: email,
+                      password: passWord,
+                      context: context);
                 }
               },
             ),

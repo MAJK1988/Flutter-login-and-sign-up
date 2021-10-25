@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/svg.dart';
@@ -6,6 +7,7 @@ import 'package:ligon_register/Screens/Signup/signup_screen.dart';
 import 'package:ligon_register/Screens/Welcome/components/background.dart';
 import 'package:ligon_register/components/rounded_button.dart';
 import 'package:ligon_register/constants.dart';
+import 'package:ligon_register/services/auth.dart';
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -26,7 +28,10 @@ class _BodyState extends State<Body> {
           children: <Widget>[
             Text(
               "WELCOME TO EPM",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryColor,
+                  fontSize: 22.0),
             ),
             SizedBox(height: size.height * 0.05),
             SvgPicture.asset(

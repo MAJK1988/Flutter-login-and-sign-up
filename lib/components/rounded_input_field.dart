@@ -33,21 +33,23 @@ class _RoundedInputFieldState extends State<RoundedInputField> {
     super.dispose();
   }
 
-  int count = 0;
+  bool ontapFiled = false;
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      count++;
-    });
     if (!widget.inputText) _myController.clear();
     return TextFieldContainer(
       child: TextField(
+        onTap: () {
+          setState(() {
+            ontapFiled = true;
+          });
+        },
         controller: _myController,
         onChanged: widget.onChanged,
         cursorColor: kPrimaryColor,
         decoration: InputDecoration(
-          errorText: count > 1
+          errorText: ontapFiled
               ? Validator.validateEmail(email: _myController.value.text)
               : null,
           icon: Icon(
